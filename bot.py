@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* تعریف فونت و رنگ‌های جدید شبیه عکس */
+        
         :root {
             --pink-gradient: linear-gradient(180deg, #ff85a1 0%, #ff477e 100%);
             --glass-bg: rgba(255, 255, 255, 0.25);
