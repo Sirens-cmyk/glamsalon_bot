@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سالن زیبایی نیکان</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --pink-gradient: linear-gradient(180deg, #ff85a1 0%, #ff477e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Tahoma', sans-serif;
+            /* پس‌زمینه صورتی اکلیلی */
+            background: url('https://img.freepik.com/free-vector/glittery-pink-bokeh-background-design_53876-101150.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        #services {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 80px; /* فضا برای دکمه پایین */
+        }
+
+        .service-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .service-card.selected {
+            border: 2px solid #ffffff;
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        .service-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+
+        .service-info p {
+            margin: 0;
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 13px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 133, 161, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .main-button {
+            background: var(--pink-gradient);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            max-width: 380px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 71, 126, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span style="font-size: 40px;">🌸</span>
+        <h1 style="margin: 10px 0 5px 0;">سالن زیبایی نیکان</h1>
+        <p style="margin: 0; opacity: 0.9;">خدمات مورد نظر را انتخاب کنید</p>
+    </div>
+
+    <div id="services">
+        </div>
+
+    <div class="footer-container">
+        <button class="main-button" onclick="sendData()">تایید و ثبت رزرو</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let selected = null;
+
+        // لود خدمات
+        fetch("services.json")
+            .then(res => res.json())
+            .then(data => renderServices(data))
+            .catch(err => console.error("خطا در لود خدمات:", err));
+
+        function renderServices(services) {
+            const container = document.getElementById("services");
+            container.innerHTML = "";
+
+            services.forEach(service => {
+                const card = document.createElement("div");
+                card.className = "service-card";
+                card.onclick = () => {
+                    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selected = service;
+                };
+
+                card.innerHTML = `
+                    <div class="service-info">
+                        <h3>${service.name}</h3>
+                        <p>${service.description}</p>
+                    </div>
+                    <div class="price">${service.price}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function sendData() {
+            if (!selected) {
+                tg.showAlert("گلم، اول یه خدمت رو انتخاب کن! 🌸");
+                return;
+            }
+            tg.sendData(JSON.stringify(selected));
+            tg.close();
+        }
+    </script>
+</body>
+</html>
